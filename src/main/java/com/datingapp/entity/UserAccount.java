@@ -2,6 +2,7 @@ package com.datingapp.entity;
 
 import java.math.BigDecimal;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -19,22 +20,29 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Builder
-@Table(name = "users")
+@Table(name = "user_account")
 public class UserAccount {
 	@Id
 	@GeneratedValue(strategy = GenerationType.UUID)
 	private String id;
 	
+	@Column(nullable = false, unique = true)
+	private String email;
+
 	private String firstName;
 	private String lastName;
-	
+
 	// bio
 	private String details;
+	
+	@Column(nullable = false, unique = true)
 	private String nickname;
 	private BigDecimal polarity;
-	
-	//gender_id related to gender table
+
+	private String password;
+
+	// gender_id related to gender table
 	@ManyToOne
-    @JoinColumn(name = "gender_id")
-    private Gender gender;
+	@JoinColumn(name = "gender_id")
+	private Gender gender;
 }
