@@ -34,8 +34,7 @@ public class UserAccount {
 
 	// bio
 	private String details;
-	
-	@Column(nullable = false, unique = true)
+
 	private String nickname;
 	private BigDecimal polarity;
 

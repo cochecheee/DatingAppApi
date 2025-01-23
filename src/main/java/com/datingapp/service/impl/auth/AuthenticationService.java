@@ -1,9 +1,13 @@
 package com.datingapp.service.impl.auth;
 
+import java.security.GeneralSecurityException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -11,14 +15,21 @@ import org.springframework.stereotype.Service;
 
 import com.datingapp.configs.jwt.JwtService;
 import com.datingapp.configs.security.UserUserDetails;
-import com.datingapp.dto.RegisterRequest;
-import com.datingapp.dto.RegisterResponse;
-import com.datingapp.dto.ResetPasswordRequest;
-import com.datingapp.dto.ResetPasswordResponse;
 import com.datingapp.dto.auth.AuthenticationRequest;
 import com.datingapp.dto.auth.AuthenticationResponse;
+import com.datingapp.dto.request.GoogleSignInRequest;
+import com.datingapp.dto.request.RegisterRequest;
+import com.datingapp.dto.request.ResetPasswordRequest;
+import com.datingapp.dto.response.RegisterResponse;
+import com.datingapp.dto.response.ResetPasswordResponse;
 import com.datingapp.entity.UserAccount;
 import com.datingapp.repository.IUserAccountRepository;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.gson.GsonFactory;
+
+import io.jsonwebtoken.io.IOException;
 
 @Service
 public class AuthenticationService {
@@ -32,6 +43,8 @@ public class AuthenticationService {
 	private AuthenticationManager authManager;
 	@Autowired
 	private OTPSenderService otpSenderService;
+	@Value("${spring.security.oauth2.client.registration.google.client-id}")
+	private String YOUR_GOOGLE_CLIENT_ID;
 
 	/* ONLY HAVE 2 ROLES: USER AND GUEST */
 
@@ -80,6 +93,54 @@ public class AuthenticationService {
 		var jwtToken = jwtService.generateToken(new UserUserDetails(user));
 		return AuthenticationResponse.builder().token(jwtToken).build();
 	}
+	
+	// google sign in
+//	public AuthenticationResponse googleSignIn(GoogleSignInRequest signInRequest) {
+//		try {
+//	        // Verify ID Token with Google
+//	        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new GsonFactory())
+//	                .setAudience(Collections.singletonList("YOUR_GOOGLE_CLIENT_ID")) 
+//	                .build();
+//
+//	        GoogleIdToken token = null;
+//			try {
+//				token = verifier.verify(signInRequest.getIdToken());
+//			} catch (java.io.IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//	        if (token == null) {
+//	            return AuthenticationResponse.builder()
+//	                    .token("Invalid ID token")
+//	                    .build();  // Return an error message if token is invalid
+//	        }
+//
+//	        // If valid, store the user in the database
+//	        Optional<UserAccount> existingUser = accountRepository.findByEmail(signInRequest.getEmail());
+//	        UserAccount newUser = new UserAccount();
+//	        if (!existingUser.isPresent()) {
+//	            // If user does not exist, register the user
+//	   
+//	            newUser.setEmail(signInRequest.getEmail());
+//	            newUser.setPassword(encoder.encode("123456"));
+//	            accountRepository.save(newUser);
+//	        }
+//
+//	        // Generate JWT token
+//	        var jwtToken = jwtService.generateToken(new UserUserDetails(newUser));
+//
+//	        // Return the JWT token in the AuthenticationResponse
+//	        return AuthenticationResponse.builder()
+//	                .token(jwtToken)
+//	                .build();
+//
+//	    } catch (GeneralSecurityException | IOException e) {
+//	        // Handle exceptions during token verification
+//	        return AuthenticationResponse.builder()
+//	                .token("Error verifying token")
+//	                .build();
+//	    }
+//	}
 
 	// request reset password
 	public ResetPasswordResponse requestResetPassword(ResetPasswordRequest req) {

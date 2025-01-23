@@ -9,12 +9,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.datingapp.dto.RegisterRequest;
-import com.datingapp.dto.RegisterResponse;
-import com.datingapp.dto.ResetPasswordRequest;
-import com.datingapp.dto.ResetPasswordResponse;
 import com.datingapp.dto.auth.AuthenticationRequest;
 import com.datingapp.dto.auth.AuthenticationResponse;
+import com.datingapp.dto.request.GoogleSignInRequest;
+import com.datingapp.dto.request.RegisterRequest;
+import com.datingapp.dto.request.ResetPasswordRequest;
+import com.datingapp.dto.response.RegisterResponse;
+import com.datingapp.dto.response.ResetPasswordResponse;
 import com.datingapp.service.impl.auth.AuthenticationService;
 
 import lombok.RequiredArgsConstructor;
@@ -55,4 +56,11 @@ public class AuthenticationController {
 	public ResponseEntity<Map<String,String>> resetPassword(@RequestBody ResetPasswordResponse response) {
 		return ResponseEntity.ok(authService.resetPassword(response));
 	}
+	
+	// google login
+//	@PostMapping("/google-login")
+//	public ResponseEntity<AuthenticationResponse> googleLogin(
+//			@RequestBody GoogleSignInRequest request) {
+//		return ResponseEntity.ok(authService.googleSignIn(request));
+//	}
 }
