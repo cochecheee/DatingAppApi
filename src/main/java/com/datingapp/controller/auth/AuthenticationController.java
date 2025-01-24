@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.datingapp.dto.auth.AuthenticationRequest;
 import com.datingapp.dto.auth.AuthenticationResponse;
-import com.datingapp.dto.request.GoogleSignInRequest;
 import com.datingapp.dto.request.RegisterRequest;
 import com.datingapp.dto.request.ResetPasswordRequest;
 import com.datingapp.dto.response.RegisterResponse;
@@ -34,17 +33,19 @@ public class AuthenticationController {
 		return ResponseEntity.ok(authService.authenticate(request));
 	}
 	
+	// TODO 1: error saving gender
 	// request register
 	@PostMapping("/request-register")
-	public ResponseEntity<RegisterResponse> requestRegister(@RequestBody RegisterRequest request) {
+	public ResponseEntity<?> requestRegister(@RequestBody RegisterRequest request) {
 		return ResponseEntity.ok(authService.requestRegister(request));
 	}
 	
 	@PostMapping("/register")
-	public ResponseEntity<AuthenticationResponse> register(
+	public ResponseEntity<?> register(
 			@RequestBody RegisterResponse response) {
 		return ResponseEntity.ok(authService.register(response));
 	}
+	// end TODO
 	
 	// request reset password
 	@PostMapping("/request-reset-password")

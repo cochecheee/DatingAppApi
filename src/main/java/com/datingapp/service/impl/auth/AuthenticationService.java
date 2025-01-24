@@ -1,35 +1,33 @@
 package com.datingapp.service.impl.auth;
 
-import java.security.GeneralSecurityException;
-import java.util.Collections;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.datingapp.configs.jwt.JwtService;
 import com.datingapp.configs.security.UserUserDetails;
+import com.datingapp.dto.ErrorResponse;
 import com.datingapp.dto.auth.AuthenticationRequest;
 import com.datingapp.dto.auth.AuthenticationResponse;
-import com.datingapp.dto.request.GoogleSignInRequest;
 import com.datingapp.dto.request.RegisterRequest;
 import com.datingapp.dto.request.ResetPasswordRequest;
 import com.datingapp.dto.response.RegisterResponse;
 import com.datingapp.dto.response.ResetPasswordResponse;
+import com.datingapp.entity.Gender;
 import com.datingapp.entity.UserAccount;
+import com.datingapp.exception.ErrorMessage;
+import com.datingapp.repository.GenderRepository;
 import com.datingapp.repository.IUserAccountRepository;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.gson.GsonFactory;
-
-import io.jsonwebtoken.io.IOException;
 
 @Service
 public class AuthenticationService {
@@ -43,53 +41,89 @@ public class AuthenticationService {
 	private AuthenticationManager authManager;
 	@Autowired
 	private OTPSenderService otpSenderService;
-	@Value("${spring.security.oauth2.client.registration.google.client-id}")
-	private String YOUR_GOOGLE_CLIENT_ID;
+	@Autowired
+	private GenderRepository genderRepository;
+//	@Value("${spring.security.oauth2.client.registration.google.client-id}")
+//	private String YOUR_GOOGLE_CLIENT_ID;
 
 	/* ONLY HAVE 2 ROLES: USER AND GUEST */
 
 	// login
 	public AuthenticationResponse authenticate(AuthenticationRequest request) {
-		// TODO Auto-generated method stub
 		authManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
-
 		var user = accountRepository.findByEmail(request.getEmail()).orElseThrow();
-
 		var jwtToken = jwtService.generateToken(new UserUserDetails(user));
-
 		return AuthenticationResponse.builder().token(jwtToken).build();
 	}
 
 	// request register
-	public RegisterResponse requestRegister(RegisterRequest req) {
+	public Object requestRegister(RegisterRequest req) {
+		// if email exist in database
+		Optional<UserAccount> user = accountRepository.findByEmail(req.getEmail());
+		if(user.isPresent() ) {
+			return ErrorResponse.builder()
+					.message(ErrorMessage.EMAIL_EXIST)
+					.timestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+					.status(409)
+					.build();
+		}
+		
 		String otp = otpSenderService.generateOTP(req.getEmail());
 		otpSenderService.sendOTPEmail(req.getEmail(), otp);
-
-		return RegisterResponse.builder().email(req.getEmail()).password(req.getPassword()).email(req.getEmail())
-				.firstname(req.getFirstname()).lastname(req.getLastname()).otpCode(otp).build();
+		
+		RegisterResponse registerRes = RegisterResponse.builder()
+				.email(req.getEmail())
+				.password(req.getPassword())
+				.email(req.getEmail())
+				.firstname(req.getFirstname())
+				.lastname(req.getLastname())
+				.otpCode(otp)
+				.gender(req.getGender())
+				.nickname(req.getNickname())
+				.build();
+		return registerRes;
 	}
 
 	// register
 	// register -> send otp through email -> check otp -> failed/success
-	public AuthenticationResponse register(RegisterResponse response) {
-		// TODO Auto-generated method stub
-
-		// check valid otp
-		// Validate OTP and password matching
-		if (!otpSenderService.validateOTP(response.getEmail(), response.getOtpCode())) {
-
-			System.out.println("false otp");
-			// add logic for this situation
+	public Object register(RegisterResponse response) {
+		// check existed mail
+		Optional<UserAccount> userExisted = accountRepository.findByEmail(response.getEmail());
+		if(userExisted.isEmpty()) {
+			return ErrorResponse.builder()
+					.message(ErrorMessage.EMAIL_INVALID)
+					.timestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+					.status(409)
+					.build();
 		}
-
-		var user = UserAccount.builder().password(encoder.encode(response.getPassword())).email(response.getEmail())
-				.firstName(response.getFirstname()).lastName(response.getLastname()).build();
-
+		
+		// check valid otp
+		if (!otpSenderService.validateOTP(response.getEmail(), response.getOtpCode())) {
+			//System.out.println("false otp");
+			//TODO 3: add logic for this situation
+			return ErrorResponse.builder()
+					.status(409)
+					.message(ErrorMessage.OTP_INVALID)
+					.timestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+					.build();
+		}
+		
+		Optional<Gender> gender = genderRepository.findById(response.getGender().toString());
+		if(gender.isEmpty()) {
+			// add logic later
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Invalid gender");
+		}
+		var user = UserAccount.builder()
+				.password(encoder.encode(response.getPassword()))
+				.email(response.getEmail())
+				.firstName(response.getFirstname())
+				.lastName(response.getLastname())
+				.nickname(response.getNickname())
+				.gender(gender.get())
+				.build();
+		
 		accountRepository.save(user);
-
-		// remove otp
 		otpSenderService.removeOTP(response.getEmail());
-
 		var jwtToken = jwtService.generateToken(new UserUserDetails(user));
 		return AuthenticationResponse.builder().token(jwtToken).build();
 	}
@@ -146,14 +180,12 @@ public class AuthenticationService {
 	public ResetPasswordResponse requestResetPassword(ResetPasswordRequest req) {
 		String otp = otpSenderService.generateOTP(req.getEmail());
 		otpSenderService.sendOTPEmail(req.getEmail(), otp);
-
 		return ResetPasswordResponse.builder().email(req.getEmail()).newPassword(req.getNewPass())
 				.confirmedPassword(req.getConfirmedPass()).otp(otp).build();
 	}
 
 	// reset password
 	public Map<String, String> resetPassword(ResetPasswordResponse res) {
-
 		Map<String, String> response = new HashMap<>();
 		// fetch user by email
 		var userOptional = accountRepository.findByEmail(res.getEmail());
@@ -161,27 +193,21 @@ public class AuthenticationService {
 			response.put("error", "User not found with the provided email.");
 			return response;
 		}
-
 		UserAccount user = userOptional.get();
-
 		// validate OTP and password matching
 		if (!otpSenderService.validateOTP(res.getEmail(), res.getOtp())) {
 			response.put("error", "Invalid OTP.");
 			return response;
 		}
-
 		if (!res.getConfirmedPassword().equals(res.getNewPassword())) {
 			response.put("error", "Passwords do not match.");
 			return response;
 		}
-
 		// reset password
 		user.setPassword(encoder.encode(res.getNewPassword()));
 		accountRepository.save(user);
-		
 		// delete otp
 		otpSenderService.removeOTP(res.getEmail());
-
 		response.put("message", "Password reset successfully.");
 		return response;
 	}

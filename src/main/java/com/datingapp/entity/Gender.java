@@ -24,5 +24,4 @@ public class Gender {
 	
 	@Column(columnDefinition = "nvarchar(32)")
 	private String name;
-
 }
