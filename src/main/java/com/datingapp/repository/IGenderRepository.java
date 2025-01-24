@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.datingapp.entity.Gender;
 
 @Repository
-public interface GenderRepository extends JpaRepository<Gender, String>{
+public interface IGenderRepository extends JpaRepository<Gender, String>{
 
 }

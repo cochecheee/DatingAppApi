@@ -11,4 +11,6 @@ import com.datingapp.entity.UserAccount;
 public interface IUserAccountRepository extends JpaRepository<UserAccount, String>{
 	//find user by email
 	Optional<UserAccount> findByEmail(String email);
+	//find user by nickname
+	Optional<UserAccount> findByNickname(String nickname);
 }

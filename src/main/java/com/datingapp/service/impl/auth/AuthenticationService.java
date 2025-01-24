@@ -26,7 +26,7 @@ import com.datingapp.dto.response.ResetPasswordResponse;
 import com.datingapp.entity.Gender;
 import com.datingapp.entity.UserAccount;
 import com.datingapp.exception.ErrorMessage;
-import com.datingapp.repository.GenderRepository;
+import com.datingapp.repository.IGenderRepository;
 import com.datingapp.repository.IUserAccountRepository;
 
 @Service
@@ -42,7 +42,7 @@ public class AuthenticationService {
 	@Autowired
 	private OTPSenderService otpSenderService;
 	@Autowired
-	private GenderRepository genderRepository;
+	private IGenderRepository genderRepository;
 //	@Value("${spring.security.oauth2.client.registration.google.client-id}")
 //	private String YOUR_GOOGLE_CLIENT_ID;
 
