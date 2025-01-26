@@ -87,15 +87,15 @@ public class AuthenticationService {
 	// register
 	// register -> send otp through email -> check otp -> failed/success
 	public Object register(RegisterResponse response) {
-		// check existed mail
-		Optional<UserAccount> userExisted = accountRepository.findByEmail(response.getEmail());
-		if(userExisted.isEmpty()) {
-			return ErrorResponse.builder()
-					.message(ErrorMessage.EMAIL_INVALID)
-					.timestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
-					.status(409)
-					.build();
-		}
+//		// check existed mail
+//		Optional<UserAccount> userExisted = accountRepository.findByEmail(response.getEmail());
+//		if(userExisted.isEmpty()) {
+//			return ErrorResponse.builder()
+//					.message(ErrorMessage.EMAIL_INVALID)
+//					.timestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+//					.status(409)
+//					.build();
+//		}
 		
 		// check valid otp
 		if (!otpSenderService.validateOTP(response.getEmail(), response.getOtpCode())) {

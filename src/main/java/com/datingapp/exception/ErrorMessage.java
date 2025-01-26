@@ -6,4 +6,5 @@ public class ErrorMessage {
 	 public static final String EMAIL_INVALID = "Invalid email.";
 	 public static final String GENDER_INVALID = "Invalid gender.";
 	 public static final String NICKNAME_EXIST = "Existed nickname.";
+	 public static final String USER_NOT_EXIST = "This user does not exist in app, please try again.";
 }

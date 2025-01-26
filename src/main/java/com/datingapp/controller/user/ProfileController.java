@@ -20,11 +20,14 @@ public class ProfileController {
 	@Autowired
 	private ProfileService profileService;
 	
-	// TODO 2: check after do TODO 1
+	//TODO 1: Add userID when response
 	@GetMapping("/profiles")
 	public ResponseEntity<?> getProfile(@RequestHeader("Authorization") String token) {
 		try {
             // get username from jwt token
+//			String reqUserEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+//			System.out.println(reqUserEmail);
+			// TODO 2: get rid of token
             String username = profileService.extractUsernameFromToken(token);
             return ResponseEntity.ok(profileService.getProfileByUsername(username));
         } catch (ResponseStatusException ex) {
