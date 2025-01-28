@@ -1,9 +1,8 @@
 package com.datingapp.service;
 
-import com.datingapp.dto.request.ProfileRequest;
+import com.datingapp.dto.profile.ProfileRequest;
 
 public interface ProfileService {
 	Object getProfileByUsername(String username);
-	String extractUsernameFromToken(String token);
-	Object updateProfile(ProfileRequest profile, String token);
+	Object updateProfile(ProfileRequest profile);
 }

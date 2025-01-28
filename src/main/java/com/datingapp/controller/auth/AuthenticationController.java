@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.datingapp.dto.auth.AuthenticationRequest;
 import com.datingapp.dto.auth.AuthenticationResponse;
-import com.datingapp.dto.request.RegisterRequest;
-import com.datingapp.dto.request.ResetPasswordRequest;
-import com.datingapp.dto.response.RegisterResponse;
-import com.datingapp.dto.response.ResetPasswordResponse;
+import com.datingapp.dto.register.RegisterRequest;
+import com.datingapp.dto.register.RegisterResponse;
+import com.datingapp.dto.register.ResetPasswordRequest;
+import com.datingapp.dto.register.ResetPasswordResponse;
 import com.datingapp.service.impl.auth.AuthenticationService;
 
 import lombok.RequiredArgsConstructor;

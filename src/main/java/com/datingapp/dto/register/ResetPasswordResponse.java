@@ -1,4 +1,4 @@
-package com.datingapp.dto.response;
+package com.datingapp.dto.register;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

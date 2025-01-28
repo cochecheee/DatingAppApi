@@ -10,6 +10,7 @@ import java.util.function.Function;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
@@ -18,7 +19,8 @@ import io.jsonwebtoken.Jwts;
 
 @Service
 public class JwtService {
-	private String SECRET_KEY = "supersupersecretsupersupersecretsupersupersecretsupersupersecretsupersupersecretsupersupersecretsupersupersecret";
+	@Value("${app.secret.key}")
+	private String SECRET_KEY;
 
 	public String extractUsername(String token) {
 		// TODO Auto-generated method stub

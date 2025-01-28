@@ -1,4 +1,4 @@
-package com.datingapp.dto.response;
+package com.datingapp.dto.chat;
 import java.util.List;
 
 import lombok.AllArgsConstructor;

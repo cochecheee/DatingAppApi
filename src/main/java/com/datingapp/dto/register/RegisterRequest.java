@@ -1,4 +1,4 @@
-package com.datingapp.dto.response;
+package com.datingapp.dto.register;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,12 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class RegisterResponse {
+public class RegisterRequest {
 	private String firstname;
 	private String lastname;
-	private String email;
 	private String nickname;
+	private String email;
 	private Integer gender;
 	private String password;
-	private String otpCode;
 }

@@ -1,4 +1,4 @@
-package com.datingapp.dto.response;
+package com.datingapp.dto.profile;
 
 import java.math.BigDecimal;
 

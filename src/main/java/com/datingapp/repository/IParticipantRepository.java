@@ -24,5 +24,13 @@ public interface IParticipantRepository extends JpaRepository<Participant, Strin
 	// find user by participant id
 	@Query("SELECT p.userAccount FROM Participant p WHERE p.id = :participantId")
 	Optional<UserAccount> findUserByParticipantId(@Param("participantId") String participantId);
+	
+	// find participant having conversation equals conversation id and user_acc_id differs from userID
+	@Query("SELECT p FROM Participant p " +
+	           "WHERE p.conversation.id = :conversationId " +
+	           "AND p.userAccount.id <> :userId")
+    Optional<Participant> findOtherParticipantInConversation(
+            @Param("conversationId") String conversationId,
+            @Param("userId") String userId);
 
 }

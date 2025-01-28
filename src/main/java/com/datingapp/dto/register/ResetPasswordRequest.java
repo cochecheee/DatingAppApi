@@ -1,4 +1,4 @@
-package com.datingapp.dto.request;
+package com.datingapp.dto.register;
 
 import lombok.Data;
 

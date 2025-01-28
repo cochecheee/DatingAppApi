@@ -1,5 +1,7 @@
 package com.datingapp.repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -14,4 +16,9 @@ public interface IConversationRepository extends JpaRepository<Conversation, Str
 			+ "   JOIN Participant p2 ON p1.conversation.id = p2.conversation.id "
 			+ "   WHERE p1.userAccount.id = :user1ID AND p2.userAccount.id = :user2ID" + ")")
 	Conversation findConversationByUser1And2ID(@Param("user1ID") String user1ID, @Param("user2ID") String user2ID);
+	
+	// find list of conversation by userid
+	@Query("SELECT c FROM Conversation c WHERE c.userAccount.id =:userID")
+	List<Conversation> findConversationsByUserID(@Param("userID") String userID);
+	
 }
