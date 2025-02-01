@@ -15,7 +15,9 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MessageResponse {
-	private String userID;
+	private String convID;
+	private String userSendID;
+	private String userReceivID;
 	private String type; // sending text or image
 	private String messageText;
 	private LocalDateTime timestamp;

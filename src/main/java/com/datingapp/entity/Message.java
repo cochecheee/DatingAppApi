@@ -28,6 +28,8 @@ public class Message {
 	
 	@Column(name = "message_text")
     private String messageText;
+	
+	private String messageType;
 
     @Column(name = "ts")
     private LocalDateTime timestamp;
