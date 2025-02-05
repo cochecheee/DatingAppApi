@@ -25,6 +25,12 @@ public class MatchingController {
 	// TODO 2: user 1 match user2
 	@PostMapping("/{user1}/match/{user2}")
 	public ResponseEntity<?> matchTwoUsers(@PathVariable("user1") String user1ID, @PathVariable("user2") String user2ID) {
+		return ResponseEntity.ok(matchingService.matching(user1ID,user2ID));
+	}
+	
+	// TODO 3: user unmatch or swipe left a user
+	@PostMapping("/{user1}/unmatch/{user2}")
+	public ResponseEntity<?> unmatchTwoUsers(@PathVariable("user1") String user1ID, @PathVariable("user2") String user2ID) {
 		return ResponseEntity.ok("ok");
 	}
 }
